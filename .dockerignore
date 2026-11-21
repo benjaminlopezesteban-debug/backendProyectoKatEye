@@ -1,0 +1,7 @@
+.env
+.git/
+.gitignore
+docs/
+*.zip
+target/
+node_modules/

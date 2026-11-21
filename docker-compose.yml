@@ -1,0 +1,55 @@
+services:
+  db:
+    image: mysql:8.4
+    container_name: kateye-db
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-kateye}
+      MYSQL_USER: ${MYSQL_USER:-kateye}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-kateye}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-kateye}
+    volumes:
+      - kateye_mysqldata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u$$MYSQL_USER -p$$MYSQL_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - kateye-net
+
+  backend:
+    build: ./katEye
+    container_name: kateye-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/kateye?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-kateye}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-kateye}
+      JWT_SECRET: ${JWT_SECRET:-katEye-dev-secret-change-me-0123456789abcdef}
+      CORS_ORIGEN: ${CORS_ORIGEN:-http://localhost:5173}
+      KATEYE_PAGO_SIMULADO_RESULTADO: ${PAGO_SIMULADO:-APROBADA}
+      KATEYE_PEDIDO_EXPIRACION_MINUTOS: ${PEDIDO_EXPIRACION_MINUTOS:-30}
+      KATEYE_PEDIDO_ZONA_HORARIA: ${PEDIDO_ZONA_HORARIA:-America/Santiago}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    networks:
+      - kateye-net
+
+  frontend:
+    build: ./frontend
+    container_name: kateye-frontend
+    profiles: ["frontend"]
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    networks:
+      - kateye-net
+
+volumes:
+  kateye_mysqldata:
+
+networks:
+  kateye-net:
