@@ -29,7 +29,7 @@ public class PagoController {
     @PostMapping("/simular")
     @ResponseStatus(HttpStatus.CREATED)
     public PagoResponse simular(
-            @RequestHeader(value = "Idempotency-Key", required = false) String clave,
+            @RequestHeader("Idempotency-Key") String clave,
             @Valid @RequestBody PagoRequest request) {
         return pagoService.simular(clave, request);
     }
@@ -49,7 +49,7 @@ public class PagoController {
     public PagoResponse reintentar(
             @PathVariable String numero,
             @RequestParam(required = false) String correo,
-            @RequestHeader(value = "Idempotency-Key", required = false) String clave) {
+            @RequestHeader("Idempotency-Key") String clave) {
         return pagoService.reintentar(numero, correo, clave);
     }
 }

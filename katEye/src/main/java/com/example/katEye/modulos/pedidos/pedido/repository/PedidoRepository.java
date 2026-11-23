@@ -23,6 +23,9 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     @Query("SELECT MAX(p.numero) FROM Pedido p WHERE p.numero LIKE CONCAT(:prefijo, '%')")
     Optional<String> ultimoNumeroConPrefijo(@Param("prefijo") String prefijo);
 
-    @Query(value = "SELECT 1 FROM (SELECT pg_advisory_xact_lock(hashtext(:prefijo))) bloqueo", nativeQuery = true)
+    @Query(value = "SELECT GET_LOCK(:prefijo, 10)", nativeQuery = true)
     Integer bloquearNumero(@Param("prefijo") String prefijo);
+
+    @Query(value = "SELECT RELEASE_LOCK(:prefijo)", nativeQuery = true)
+    Integer liberarNumero(@Param("prefijo") String prefijo);
 }

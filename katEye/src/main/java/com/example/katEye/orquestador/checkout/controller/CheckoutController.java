@@ -25,7 +25,7 @@ public class CheckoutController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CheckoutResponse confirmar(
-            @RequestHeader(value = "Idempotency-Key", required = false) String clave,
+            @RequestHeader("Idempotency-Key") String clave,
             @Valid @RequestBody CheckoutRequest request) {
         return checkoutOrquestador.confirmar(clave, request);
     }

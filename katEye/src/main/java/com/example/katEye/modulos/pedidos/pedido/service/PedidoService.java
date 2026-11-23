@@ -272,11 +272,18 @@ public class PedidoService {
 
     private String generarNumero() {
         String prefijo = LocalDate.now(zonaHoraria).format(FORMATO_FECHA) + "-";
-        pedidoRepository.bloquearNumero(prefijo);
-        int correlativo = pedidoRepository.ultimoNumeroConPrefijo(prefijo)
-                .map(ultimo -> Integer.parseInt(ultimo.substring(prefijo.length())) + 1)
-                .orElse(1);
-        return prefijo + String.format("%04d", correlativo);
+        Integer bloqueo = pedidoRepository.bloquearNumero(prefijo);
+        if (bloqueo == null || bloqueo != 1) {
+            throw new ReglaNegocioException("No se pudo bloquear la generacion del numero de pedido");
+        }
+        try {
+            int correlativo = pedidoRepository.ultimoNumeroConPrefijo(prefijo)
+                    .map(ultimo -> Integer.parseInt(ultimo.substring(prefijo.length())) + 1)
+                    .orElse(1);
+            return prefijo + String.format("%04d", correlativo);
+        } finally {
+            pedidoRepository.liberarNumero(prefijo);
+        }
     }
 
     private void validarEntrega(TipoEntrega tipoEntrega, PedidoCommand command) {
