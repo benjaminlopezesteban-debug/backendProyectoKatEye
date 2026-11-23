@@ -14,6 +14,8 @@ import com.example.katEye.modulos.catalogo.producto.exception.CodigoProductoDupl
 import com.example.katEye.modulos.catalogo.producto.exception.ProductoNoEncontradoException;
 import com.example.katEye.modulos.catalogo.producto.exception.StockInsuficienteException;
 import com.example.katEye.modulos.catalogo.producto.repository.ProductoRepository;
+import com.example.katEye.modulos.catalogo.productoimagen.entity.ProductoImagen;
+import com.example.katEye.modulos.catalogo.productoimagen.repository.ProductoImagenRepository;
 import com.example.katEye.shared.security.SecurityUtils;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -28,16 +30,19 @@ public class ProductoService {
     private final CategoriaService categoriaService;
     private final OfertaRepository ofertaRepository;
     private final MovimientoStockService movimientoStockService;
+    private final ProductoImagenRepository productoImagenRepository;
 
     public ProductoService(
             ProductoRepository productoRepository,
             CategoriaService categoriaService,
             OfertaRepository ofertaRepository,
-            MovimientoStockService movimientoStockService) {
+            MovimientoStockService movimientoStockService,
+            ProductoImagenRepository productoImagenRepository) {
         this.productoRepository = productoRepository;
         this.categoriaService = categoriaService;
         this.ofertaRepository = ofertaRepository;
         this.movimientoStockService = movimientoStockService;
+        this.productoImagenRepository = productoImagenRepository;
     }
 
     @Transactional(readOnly = true)
@@ -181,6 +186,10 @@ public class ProductoService {
                 .map(Oferta::getPrecioOferta)
                 .orElse(null);
         BigDecimal precioFinal = precioOferta != null ? precioOferta : producto.getPrecio();
+        String imagenUrl = productoImagenRepository
+                .findFirstByProductoIdOrderByOrdenAsc(producto.getId())
+                .map(ProductoImagen::getUrl)
+                .orElse(null);
 
         return new ProductoResponse(
                 producto.getId(),
@@ -194,6 +203,7 @@ public class ProductoService {
                 producto.getStockCritico(),
                 producto.getCategoria().getId(),
                 producto.getCategoria().getNombre(),
+                imagenUrl,
                 producto.isActivo());
     }
 }

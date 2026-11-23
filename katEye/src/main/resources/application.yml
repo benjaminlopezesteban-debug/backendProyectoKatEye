@@ -18,9 +18,13 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+  web:
+    resources:
+      static-locations: file:/app/media/,file:../media/,classpath:/static/
 
 server:
   port: ${SERVER_PORT:8080}
+  forward-headers-strategy: framework
 
 management:
   endpoints:

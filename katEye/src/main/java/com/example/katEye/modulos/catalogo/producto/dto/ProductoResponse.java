@@ -14,5 +14,6 @@ public record ProductoResponse(
         Integer stockCritico,
         Long categoriaId,
         String categoriaNombre,
+        String imagenUrl,
         boolean activo) {
 }
