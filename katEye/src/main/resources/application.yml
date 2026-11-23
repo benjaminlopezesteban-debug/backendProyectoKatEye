@@ -4,7 +4,7 @@ spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/kateye?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
     username: ${SPRING_DATASOURCE_USERNAME:kateye}
-    password: ${SPRING_DATASOURCE_PASSWORD:kateye}
+    password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: validate
@@ -33,7 +33,7 @@ management:
         enabled: true
 
 jwt:
-  secret: ${JWT_SECRET:katEye-dev-secret-change-me-0123456789abcdef}
+  secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION:3600000}
 
 kateye:
