@@ -63,6 +63,11 @@ class ValidacionRequestTest {
     }
 
     @Test
+    void loginAceptaLaCuentaAdministradoraSembrada() {
+        assertTrue(valido(new LoginRequest("admin@kateye.cl", "Admin123!")));
+    }
+
+    @Test
     void loginRechazaDominioNoPermitido() {
         assertFalse(valido(new LoginRequest("ana@hotmail.com", "1234")));
     }
