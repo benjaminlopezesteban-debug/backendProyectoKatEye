@@ -26,7 +26,7 @@ public class MensajeContactoService {
     public MensajeContactoResponse enviar(MensajeContactoRequest request) {
         MensajeContacto mensaje = new MensajeContacto(
                 request.nombre().trim(),
-                request.correo().trim(),
+                request.correo() == null ? "" : request.correo().trim(),
                 request.comentario().trim(),
                 Instant.now());
         return aResponse(mensajeRepository.save(mensaje));
